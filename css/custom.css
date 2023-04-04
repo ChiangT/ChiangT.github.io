@@ -96,7 +96,7 @@
   z-index: 10086;
   pointer-events: none;
   transition: 0.2s ease-in-out;
-  transition-property: rgb(57, 197, 187), opacity, transform;
+  transition-property: background, opacity, transform;
 }
 
 #cursor.hidden {
