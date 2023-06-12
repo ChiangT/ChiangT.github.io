@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Docker笔记</title>
+      <link href="/2023/06/12/Docker/"/>
+      <url>/2023/06/12/Docker/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p>开篇文章记录一下学习Docker的过程和实际使用中碰到的坑。</p><h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>Docker作为容器技术的一种具体应用，和平时常用的虚拟机技术存在一些区别。</p><h3 id="容器vs虚拟机"><a href="#容器vs虚拟机" class="headerlink" title="容器vs虚拟机"></a>容器vs虚拟机</h3><p>容器和虚拟机都是常用的资源虚拟化技术。在虚拟化的过程中，RAM、CPU、磁盘或者网络等系统单一资源可以虚拟化成多个资源。容器和虚拟机之间的主要区别在于，虚拟机将整个计算机虚拟化到硬件层面，而容器只虚拟化到操作系统级别以上的软件层面。因此，容器技术的迭代速度更快、生态系统比较完善，但可能存在共享主机漏洞；虚拟机技术则能实现完全隔离安全，但在迭代速度和存储成本上代价更大。</p><img src="https://s2.loli.net/2023/06/12/U3xVMksbn2AQjTW.png" alt="容器vs虚拟机" style="zoom:50%;" />]]></content>
+      
+      
+      <categories>
+          
+          <category> Docker </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Docker </tag>
+            
+            <tag> 运维 </tag>
+            
+            <tag> 云原生 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Solidity笔记</title>
       <link href="/2023/06/08/Solidity/"/>
       <url>/2023/06/08/Solidity/</url>
@@ -64,7 +93,7 @@
       <link href="/2023/06/06/2024%E7%A7%8B%E6%8B%9B%E8%AE%B0%E5%BD%95/"/>
       <url>/2023/06/06/2024%E7%A7%8B%E6%8B%9B%E8%AE%B0%E5%BD%95/</url>
       
-        <content type="html"><![CDATA[<h1 id="2024秋招记录"><a href="#2024秋招记录" class="headerlink" title="2024秋招记录"></a>2024秋招记录</h1><blockquote><p>尽管只使用了轻轻的力，平静的日子还是像冰球一样一下子被抛了好远。</p></blockquote><p>打算开一篇文章记录一下自己今年秋招的面试复盘，暑期实习的面试其实也比较多，但怠惰了没去做记录。</p><hr><h2 id="私企"><a href="#私企" class="headerlink" title="私企"></a>私企</h2><h3 id="TP-LINK"><a href="#TP-LINK" class="headerlink" title="TP-LINK"></a>TP-LINK</h3><h4 id="提前批-软开-杭州"><a href="#提前批-软开-杭州" class="headerlink" title="提前批 - 软开 - 杭州"></a>提前批 - 软开 - 杭州</h4><ul><li>23年5月26日，测评笔试（行测+选择+简答+编程）</li><li>23年6月7日，一面 25min<ul><li>自我介绍</li><li>实习</li><li>单点登录</li><li>跨域</li><li>反向代理</li><li>session的存储</li><li>Spring注解，启动类注解源码</li><li>MyBatis中$和#的区别</li><li>OpenStack的组件</li></ul></li></ul><h3 id="三一"><a href="#三一" class="headerlink" title="三一"></a>三一</h3><h4 id="提前批-软开-昆山"><a href="#提前批-软开-昆山" class="headerlink" title="提前批 - 软开 - 昆山"></a>提前批 - 软开 - 昆山</h4><ul><li>23年6月9日，笔试</li></ul><hr><h2 id="国企"><a href="#国企" class="headerlink" title="国企"></a>国企</h2><hr>]]></content>
+        <content type="html"><![CDATA[<h1 id="2024秋招记录"><a href="#2024秋招记录" class="headerlink" title="2024秋招记录"></a>2024秋招记录</h1><blockquote><p>尽管只使用了轻轻的力，平静的日子还是像冰球一样一下子被抛了好远。</p></blockquote><p>打算开一篇文章记录一下自己今年秋招的面试复盘，暑期实习的面试其实也比较多，但怠惰了没去做记录。</p><hr><h2 id="私企"><a href="#私企" class="headerlink" title="私企"></a>私企</h2><h3 id="TP-LINK"><a href="#TP-LINK" class="headerlink" title="TP-LINK"></a>TP-LINK</h3><h4 id="提前批-软开-杭州"><a href="#提前批-软开-杭州" class="headerlink" title="提前批 - 软开 - 杭州"></a>提前批 - 软开 - 杭州</h4><ul><li>23年5月26日，测评笔试（行测+选择+简答+编程）</li><li>23年6月7日，一面 25min<ul><li>自我介绍</li><li>实习</li><li>单点登录</li><li>跨域</li><li>反向代理</li><li>session的存储</li><li>Spring注解，启动类注解源码</li><li>MyBatis中$和#的区别</li><li>OpenStack的组件</li></ul></li><li>23年6月13日，二面</li></ul><h3 id="三一"><a href="#三一" class="headerlink" title="三一"></a>三一</h3><h4 id="提前批-软开-昆山"><a href="#提前批-软开-昆山" class="headerlink" title="提前批 - 软开 - 昆山"></a>提前批 - 软开 - 昆山</h4><ul><li>23年6月9日，笔试</li></ul><hr><h2 id="国企"><a href="#国企" class="headerlink" title="国企"></a>国企</h2><hr>]]></content>
       
       
       <categories>
