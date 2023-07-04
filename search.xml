@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>关于Git的一些问题解决</title>
+      <link href="/2023/07/04/%E8%A7%A3%E5%86%B3git%E7%BD%91%E7%BB%9C%E9%97%AE%E9%A2%98/"/>
+      <url>/2023/07/04/%E8%A7%A3%E5%86%B3git%E7%BD%91%E7%BB%9C%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<h1 id="关于Git的一些问题解决"><a href="#关于Git的一些问题解决" class="headerlink" title="关于Git的一些问题解决"></a>关于Git的一些问题解决</h1><p>这篇文章记录一下自己在使用git的过程中碰到的一些问题及其解决方法。</p><hr><h2 id="网络超时"><a href="#网络超时" class="headerlink" title="网络超时"></a>网络超时</h2><p>在terminal里进行<code>git clone</code>和<code>git push</code>时经常无响应，或者连接超时，可用如下命令通过代理解决</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890</span><br></pre></td></tr></table></figure><p>这里的7890是我用的clash代理端口，可根据实际情况更换。</p><hr><h2 id="账号认证"><a href="#账号认证" class="headerlink" title="账号认证"></a>账号认证</h2><p>在2021年8月之后，Github不再支持账号+密码的认证方式，因此需要用到token来替代密码。</p><p>但每次做<code>push</code>都输入一遍token非常麻烦，因此可修改git的配置：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global credential.helper <span class="string">&#x27;cache --timeout=EXPIRE_TIME&#x27;</span></span><br></pre></td></tr></table></figure><p>其中，<code>EXPIRE_TIME</code>是指定的token缓存过期时间，单位为秒。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Git </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Git </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Discord Bot JavaScript</title>
       <link href="/2023/06/16/Discord%20Bot%20JavaScript/"/>
       <url>/2023/06/16/Discord%20Bot%20JavaScript/</url>
