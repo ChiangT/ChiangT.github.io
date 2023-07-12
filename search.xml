@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>MySQL数据存储</title>
+      <link href="/2023/07/12/MySQL%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/"/>
+      <url>/2023/07/12/MySQL%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/</url>
+      
+        <content type="html"><![CDATA[<h1 id="MySQL数据存储"><a href="#MySQL数据存储" class="headerlink" title="MySQL数据存储"></a>MySQL数据存储</h1><blockquote><p>参考文档：</p><p><a href="https://xiaolincoding.com/mysql/">小林coding</a></p></blockquote><p>这篇文章主要记录一下MySQL的数据存储和文件结构情况。</p><hr><h2 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h2><p><strong>表空间由段（segment）、区（extent）、页（page）、行（row）组成</strong>，InnoDB存储引擎的逻辑存储结构大致如下：</p><img src="https://i.ibb.co/2YDzjyM/drawio.png" alt="TableSpace" style="zoom:60%;" /><ul><li>行：记录都是按行存放的，每行记录根据不同的行格式，有不同的存储结构</li><li>页：InnoDB的数据是按照页为单位进行读写的，默认每个页的大小为16KB</li><li>区：一个区的大小为1MB，可容纳64个16KB的页，这样的话这些页在内存中的物理地址也是相邻的，那么磁盘查询B+树时就可以顺序IO而不需要随机IO</li><li>段：段可分为数据段、索引段和回滚段<ul><li>索引段：存放B+树的非叶子节点的区的集合</li><li>数据段：存放B+树的叶子节点的区的集合</li><li>回滚段：存放的是回滚数据的区的集合</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MySQL架构</title>
       <link href="/2023/07/09/MySQL%E6%9E%B6%E6%9E%84/"/>
       <url>/2023/07/09/MySQL%E6%9E%B6%E6%9E%84/</url>
