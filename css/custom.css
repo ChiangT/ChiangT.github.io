@@ -223,3 +223,10 @@ h6::before {
   font-style: normal;
   font-display: block;
 }
+
+@font-face {
+  font-family: 'comic';
+  src: url(/font/Comic-Sans-MS-Regular-2.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
