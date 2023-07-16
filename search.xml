@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Hexo+Butterfly配置</title>
+      <link href="/2023/07/16/Hexo+Butterfly%20Config/"/>
+      <url>/2023/07/16/Hexo+Butterfly%20Config/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Hexo-Butterfly-Config"><a href="#Hexo-Butterfly-Config" class="headerlink" title="Hexo+Butterfly Config"></a>Hexo+Butterfly Config</h1><h2 id="分栏tabs"><a href="#分栏tabs" class="headerlink" title="分栏tabs"></a>分栏tabs</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;% tabs test4 %&#125;</span><br><span class="line">&lt;!-- tab 第一个Tab --&gt;</span><br><span class="line"><span class="strong">**tab名字为第一个Tab**</span></span><br><span class="line">&lt;!-- endtab --&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- tab @fab fa-apple-pay --&gt;</span><br><span class="line"><span class="strong">**只有图标 没有Tab名字**</span></span><br><span class="line">&lt;!-- endtab --&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- tab 炸弹@fas fa-bomb --&gt;</span><br><span class="line"><span class="strong">**名字+icon**</span></span><br><span class="line">&lt;!-- endtab --&gt;</span><br><span class="line">&#123;% endtabs %&#125;</span><br></pre></td></tr></table></figure><h2 id="标签外挂"><a href="#标签外挂" class="headerlink" title="标签外挂"></a>标签外挂</h2><h3 id="Default-Note"><a href="#Default-Note" class="headerlink" title="Default Note"></a>Default Note</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;% note simple %&#125;</span><br><span class="line">默认 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note default simple %&#125;</span><br><span class="line">default 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note primary simple %&#125;</span><br><span class="line">primary 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note success simple %&#125;</span><br><span class="line">success 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note info simple %&#125;</span><br><span class="line">info 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note warning simple %&#125;</span><br><span class="line">warning 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note danger simple %&#125;</span><br><span class="line">danger 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br></pre></td></tr></table></figure><h3 id="Note-with-Icon"><a href="#Note-with-Icon" class="headerlink" title="Note with Icon"></a>Note with Icon</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;% note &#x27;fab fa-cc-visa&#x27; simple %&#125;</span><br><span class="line">你是刷 Visa 还是是 UnionPay</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line">&#123;% note red &#x27;fas fa-bullhorn&#x27; simple %&#125;</span><br><span class="line">2021年快到了....</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line">&#123;% note pink &#x27;fas fa-car-crash&#x27; simple %&#125;</span><br><span class="line">小心开车 安全至上</span><br><span class="line">&#123;% endnote %&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Blog </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+            <tag> Butterfly </tag>
+            
+            <tag> Blog </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis基础与数据结构</title>
       <link href="/2023/07/15/Redis%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
       <url>/2023/07/15/Redis%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
@@ -47,9 +76,9 @@
       
         <tags>
             
-            <tag> 数据库 </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> 数据库 </tag>
             
         </tags>
       
@@ -74,9 +103,9 @@
       
         <tags>
             
-            <tag> 数据库 </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> 数据库 </tag>
             
         </tags>
       
@@ -101,9 +130,9 @@
       
         <tags>
             
-            <tag> 数据库 </tag>
-            
             <tag> MySQL </tag>
+            
+            <tag> 数据库 </tag>
             
         </tags>
       
@@ -292,9 +321,9 @@
       
         <tags>
             
-            <tag> Java </tag>
-            
             <tag> 数据库 </tag>
+            
+            <tag> Java </tag>
             
         </tags>
       
@@ -319,9 +348,9 @@
       
         <tags>
             
-            <tag> Java </tag>
-            
             <tag> 数据库 </tag>
+            
+            <tag> Java </tag>
             
         </tags>
       
