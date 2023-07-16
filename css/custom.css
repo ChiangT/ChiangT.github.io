@@ -215,3 +215,11 @@ h6::before {
   width: 100%;
   margin: auto;
 }
+
+@font-face {
+  font-family: 'yshst';
+  src: url(/font/优设好身体.ttf);
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
