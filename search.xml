@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Blog配置</title>
+      <link href="/2023/07/16/Blog%E9%85%8D%E7%BD%AE/"/>
+      <url>/2023/07/16/Blog%E9%85%8D%E7%BD%AE/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Blog配置"><a href="#Blog配置" class="headerlink" title="Blog配置"></a>Blog配置</h1><h2 id="分栏tabs"><a href="#分栏tabs" class="headerlink" title="分栏tabs"></a>分栏tabs</h2><h2 id="标签外挂"><a href="#标签外挂" class="headerlink" title="标签外挂"></a>标签外挂</h2><h3 id="Default-Note"><a href="#Default-Note" class="headerlink" title="Default Note"></a>Default Note</h3><h3 id="Note-with-icons"><a href="#Note-with-icons" class="headerlink" title="Note with icons"></a>Note with icons</h3>]]></content>
+      
+      
+      <categories>
+          
+          <category> Blog </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Hexo </tag>
+            
+            <tag> Butterfly </tag>
+            
+            <tag> Blog </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis基础与数据结构</title>
       <link href="/2023/07/15/Redis%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
       <url>/2023/07/15/Redis%E5%9F%BA%E7%A1%80%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</url>
