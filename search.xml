@@ -58,6 +58,33 @@
     
     
     <entry>
+      <title>Redis集群</title>
+      <link href="/2023/07/18/Redis%E9%9B%86%E7%BE%A4/"/>
+      <url>/2023/07/18/Redis%E9%9B%86%E7%BE%A4/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Redis集群"><a href="#Redis集群" class="headerlink" title="Redis集群"></a>Redis集群</h1><h2 id="Redis实现服务高可用"><a href="#Redis实现服务高可用" class="headerlink" title="Redis实现服务高可用"></a>Redis实现服务高可用</h2><p>要设计一个高可用的Redis服务，要从Redis的多服务节点考虑，比如Redis的主从复制、哨兵模式、切片集群。</p><div class="note info flat"><p>主从复制</p></div><p>主从复制是 Redis 高可用服务的最基础的保证，实现方案就是将一台主Redis服务器，同步数据到多台从 Redis 服务器上，即一主多从的模式，且主从服务器之间采用的是「读写分离」的方式。</p><p>主服务器可以进行读写操作，当发生写操作时自动将写操作同步给从服务器，而从服务器一般是只读，并接受主服务器同步过来的写操作命令，然后执行这条命令。</p><p><img src="https://i.ibb.co/NL9ZBf5/redis-Group.png" alt="redisGroup"></p><p>注意，主从服务器之间的命令复制是<strong>异步</strong>进行的。</p><p>具体来说，在主从服务器命令传播阶段，主服务器收到新的写命令后，会发送给从服务器。但是，主服务器并不会等到从服务器实际执行完命令后，再把结果返回给客户端，而是主服务器自己在本地执行完命令后，就会向客户端返回结果了。如果从服务器还没有执行主服务器同步过来的命令，主从服务器间的数据就不一致了。</p><p>所以，无法实现强一致性保证（主从数据时时刻刻保持一致），数据不一致是难以避免的。</p><blockquote><p>主从复制的详细原理和具体实现，可见这篇文章：<a href="https://www.brokenmind.top/2023/07/19/Redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/">Redis主从复制</a></p></blockquote><div class="note info flat"><p>哨兵模式</p></div><p>在使用 Redis 主从服务的时候，会有一个问题，就是当 Redis 的主从服务器出现故障宕机时，需要手动进行恢复。</p><p>为了解决这个问题，Redis 增加了哨兵模式（<strong>Redis Sentinel</strong>），因为哨兵模式做到了可以监控主从服务器，并且提供<strong>主从节点故障转移的功能。</strong></p><p><img src="https://i.ibb.co/dW3nYwk/sentinel.png" alt="sentinel"></p><blockquote><p>哨兵模式的详细原理和具体实现，可见这篇文章：<a href="https://www.brokenmind.top/2023/07/22/Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/">Redis哨兵模式</a></p></blockquote><div class="note info flat"><p>切片集群模式</p></div><p>当 Redis 缓存数据量大到一台服务器无法缓存时，就需要使用 <strong>Redis 切片集群</strong>（Redis Cluster ）方案，它将数据分布在不同的服务器上，以此来降低系统对单主节点的依赖，从而提高 Redis 服务的读写性能。</p><p>切片集群方案采用哈希槽（Hash Slot），来处理数据和节点之间的映射关系。一个切片集群共有16384个哈希槽，这些哈希槽类似于数据分区，每个键值对都会根据它的key，映射到一个哈希槽中，具体分为两步：</p><ul><li>根据键值对的key，按照CRC16算法计算一个16bit的值</li><li>再用16bit值对16384取模，得到0～16383范围内的模数，每个模数代表一个相应编号的哈希槽</li></ul><p>接下来的问题就是，如何将这些哈希槽映射到具体的 Redis 节点上，有两种方案：</p><ul><li><strong>平均分配：</strong> 在使用<code>cluster create</code>命令创建 Redis 集群时，Redis 会自动把所有哈希槽平均分布到集群节点上。比如集群中有 9 个节点，则每个节点上槽的个数为 16384&#x2F;9 个。</li><li><strong>手动分配：</strong> 可以使用<code>cluster meet</code>命令手动建立节点间的连接，组成集群，再使用<code>cluster addslots</code>命令，指定每个节点上的哈希槽个数。</li></ul><p><img src="https://i.ibb.co/2ZZCj6Q/redis-Slot.png" alt="redisSlot"></p><p>上图中的切片集群共有2个Redis节点，假设有4个哈希槽，可以通过命令手动分配哈希槽，例如节点1保存哈希槽0和1，节点2保存哈希槽2和3。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h <span class="number">192.168</span><span class="number">.1</span><span class="number">.1</span> -p <span class="number">6379</span> cluster addslots <span class="number">0</span>,<span class="number">1</span></span><br><span class="line">redis-cli -h <span class="number">192.168</span><span class="number">.1</span><span class="number">.2</span> -p <span class="number">6379</span> cluster addslots <span class="number">2</span>,<span class="number">3</span></span><br></pre></td></tr></table></figure><p>在集群运行的过程中，key1和key2计算完CRC16的值后，对哈希槽总个数4进行取模，再根据模数映射到对应的哈希槽中。</p><hr><h2 id="集群脑裂问题"><a href="#集群脑裂问题" class="headerlink" title="集群脑裂问题"></a>集群脑裂问题</h2><div class="note info flat"><p>脑裂是什么？</p></div><p>Redis主从架构一般是一主多从，如果主节点发生网络问题和所有从节点失联了，但主节点和客户端之间的连接仍是正常的；客户端并不知道Redis内部发生了问题，仍在向主节点写数据（过程A），主节点将这些数据缓存到缓冲区内，而从节点无法同步这些数据。</p><p>这时，哨兵发现主节点失联，它会认为主节点挂了，于是它会在从节点中选举出一个leader作为新的主节点，这样集群就产生了两个主节点，即为脑裂。</p><p>然后，网络恢复正常，由于已经选举出了新的主节点，因此哨兵会将旧的主节点降级为从节点X，从节点X会向新的主节点请求数据同步。因为第一次同步是全量同步，此时的节点X会先清空自己本地的所有数据，然后再做同步，那么，在失联时期内，客户端在节点X写入的数据就会丢失，即集群脑裂产生数据丢失问题。</p><p><strong>概括为：由于网络问题，集群节点之间失去联系。主从数据不同步；重新平衡选举，产生两个主节点。等网络恢复，旧主节点会降级为从节点，再与新主节点进行同步复制的时候，由于会从节点会清空自己的缓冲区，所以导致之前客户端写入的数据丢失了。</strong></p><div class="note warning flat"><p>解决方案</p></div><p>当主节点发现从节点下线或者通信超时的总数量大于阈值时，那么禁止主节点进行写数据，直接将错误返回给客户端。</p><p>在Redis的配置文件中有两个参数：</p><ul><li><code>min-slaves-to-write x</code>：主节点必须要有<code>x</code>个从节点连接，如果小于这个数，主节点会禁止写数据</li><li><code>min-slaves-max-lag x</code>：主从数据复制和同步的延迟不能超过<code>x</code>秒，若超过，主节点会禁止写数据</li></ul><p>利用这两个参数，可以使得旧的主节点被限制接收客户端的写请求，也无法写入新数据；等到新的主节点上线后，就只有新的主节点能接收和处理客户端请求，新写的数据会直接写入到新的主节点内，旧的主节点降为从节点，由于之前禁止写入数据，因此也不会发生数据丢失的问题。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+            <tag> Redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis持久化</title>
       <link href="/2023/07/17/Redis%E6%8C%81%E4%B9%85%E5%8C%96/"/>
       <url>/2023/07/17/Redis%E6%8C%81%E4%B9%85%E5%8C%96/</url>
