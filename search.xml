@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Redis哨兵模式</title>
+      <link href="/2023/07/22/Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/"/>
+      <url>/2023/07/22/Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Redis哨兵模式"><a href="#Redis哨兵模式" class="headerlink" title="Redis哨兵模式"></a>Redis哨兵模式</h1><p>在Redis主从架构中，如果主节点挂了，那么客户端的写请求将无法完成，从节点也无法进行数据同步。</p><p>此时，若想恢复服务，则需要人工介入，选择一个从节点成为新的主节点，然后让其他从节点「服从」新的主节点，同时还要通知连接主节点的客户端，将其配置中的主节点IP地址更新为新的主节点地址。</p><p>因此，Redis 2.8后提供了哨兵机制，通过「哨兵」这一特殊节点，监控主节点的存活情况，并在主节点挂掉时，完成主从节点的切换。</p><p>哨兵实际上是一个运行在特殊模式下的Redis进程，一个特殊的节点。哨兵节点主要负责三件事情：<strong>监控、选主、通知</strong>。</p><h2 id="如何判断主节点故障"><a href="#如何判断主节点故障" class="headerlink" title="如何判断主节点故障"></a>如何判断主节点故障</h2><p>哨兵会每隔1秒给所有主从节点发送PING命令，当主从节点收到PING后，会发送一个响应命令给哨兵，即可判断节点是否正常。</p><p><img src="https://i.ibb.co/dW3nYwk/sentinel.png" alt="sentinel"></p><p>如果节点没有在规定的时间内响应PING命令，则哨兵会将其标记为<strong>主观下线</strong>。这个规定时间由配置项<code>down-after-milliseconds</code>参数设定，单位为毫秒。</p><div class="note info flat"><p>除了主观下线，还有客观下线</p></div><p><strong>客观下线只适用于主节点</strong>。</p><p>由于主节点可能只是因为系统压力较大或者网络发生拥塞，而不是故障，导致了其没有在规定时间内响应哨兵的PING命令，因此为其设定了「主观下线」和「客观下线」两种状态。</p><p>所以，为了减少出现误判的情况，哨兵在部署时会用多个节点形成哨兵集群（至少三台），通过多个哨兵一起判断，就可以避免单个哨兵因为网络状况不好，而误判主节点下线的情况。</p><p>当一个哨兵判断主节点「主观下线」后，会向其他哨兵发起命令；其余哨兵收到该命令后，根据自身和主节点的网络状况，做出赞成投票或者拒绝投票的响应。</p><p><img src="https://i.ibb.co/GxxnrY4/Sentinel-Judge.png" alt="sentinelJudge"></p><p>当赞同票数达到哨兵配置文件中的<code>quorom</code>值时，主节点就会被标记为「客观下线」。</p><blockquote><p><code>quorom</code>值一般设置为哨兵个数的二分之一（向上取整），即半数赞同机制</p></blockquote><p>当主节点客观下线后，哨兵就会执行主从切换的操作。</p><h2 id="哪个哨兵进行主从故障转移"><a href="#哪个哨兵进行主从故障转移" class="headerlink" title="哪个哨兵进行主从故障转移"></a>哪个哨兵进行主从故障转移</h2><p>在进行主从切换之前，需要在哨兵集群中选出一个leader，令其来执行主从切换。</p><p>选举leader的过程是一个投票的过程，在投票开始前，会有「候选者」。</p><div class="note info flat"><p>判断主节点为客观下线的那个哨兵就作为候选者</p></div><p>例如，在上节的例子中，如果哨兵B收到的赞同票达到2，那么主节点就会被标记为客观下线，哨兵B成为一个leader候选者。</p><div class="note info flat"><p>候选者如何选举成为leader</p></div><p>候选者会向其他哨兵发送命令，表明希望成为leader来执行主从切换，并让所有其他哨兵对它进行投票。</p><p>每个哨兵只有一次投票机会，如果用完后就不能参与投票了，可以投给自己或投给别人，但是只有候选者才能把票投给自己。</p><p>任何一个候选者，如果达到如下的全部条件：</p><ul><li>拿到半数以上的赞成票</li><li>拿到的赞成票数大于等于<code>quorom</code>值</li></ul><div class="note warning flat"><p>如果有多个候选者怎么办？</p></div><p>首先，每个候选者会先给自己投一票，然后向其他哨兵发起投票请求。如果投票者先收到候选者A的请求，则对其进行投票，同时该投票者的投票机会就用完了，之后则会拒绝候选者B的投票请求。哪个候选者率先满足上述条件，其就会成为leader。</p><h2 id="主从故障转移的过程"><a href="#主从故障转移的过程" class="headerlink" title="主从故障转移的过程"></a>主从故障转移的过程</h2><p><img src="https://i.ibb.co/tDQcCsv/Switch.png" alt="Switch"></p><p>主从故障转移包含四个步骤：</p><ul><li>在旧主节点属下的所有从节点里面，选出一个从节点，并将其转换为主节点</li><li>让旧主节点属下的所有从节点修改复制目标为新的主节点</li><li>将新主节点的IP地址和信息，通过「发布&#x2F;订阅」机制通知客户端</li><li>继续监视旧主节点，当其上线时，将其设置为新主节点的从节点</li></ul><div class="note info flat"><p>Step 1 选出新主节点</p></div><p>新主节点的挑选需要经过多轮考察。首先，要把已经下线的从节点过滤掉，然后把以往网络连接状况不好的从节点过滤掉。以往网络连接状况根据该从节点与主节点的断连次数决定，如果断连次数超过10次，就说明该从节点的以往网络连接状况不好。</p><p>初步过滤之后，接下来需要对所有从节点进行三轮考察：<strong>优先级、复制进度、ID号</strong>，最终优先胜出的从节点被选为新的主节点。</p><ul><li>第一轮：leader哨兵首先根据从节点优先级进行排序，优先级越小排序越靠前</li><li>第二轮：如果优先级相同，则查看复制的下标，接收的复制数据越多的从节点，排序越靠前</li><li>第三轮：最终选出排序最靠前且ID号最小的从节点</li></ul><p>然后，leader哨兵向被选中的从节点发送<code>SLAVEOF no one</code>命令，使其解除从节点身份；</p><p>在发送 <code>SLAVEOF no one</code> 命令之后，leader哨兵会以每秒一次的频率向被升级的从节点发送 <code>INFO</code> 命令（没进行故障转移之前，<code>INFO</code> 命令的频率是每十秒一次），并观察命令回复中的角色信息，当被升级节点的角色信息从原来的slave变为master时，leader哨兵就知道被选中的从节点已经顺利升级为主节点了。</p><div class="note info flat"><p>Step 2 修改从节点同步指向</p></div><p>当新的主节点诞生后，leader哨兵会将旧主节点属下的所有从节点指向新的主节点，通过<code>SLAVEOF</code>实现。</p><div class="note info flat"><p>Step 3 通知客户端</p></div><p>通知客户端主从切换的操作主要通过Redis的「发布&#x2F;订阅」机制来实现。每个哨兵节点提供发布者&#x2F;订阅者机制，客户端可以从哨兵订阅消息。</p><p>哨兵的消息订阅频道中几个常见的事件如下：</p><p><img src="https://i.ibb.co/Wn0vWMY/event-Subsribe.png" alt="eventSub"></p><p>主从切换完成后，哨兵会向<code>+switch-master</code>频道发布新主节点的IP地址和端口，客户端即可得知并与新主节点进行通信。</p><div class="note info flat"><p>Step 4 将旧主节点变为从节点</p></div><p>leader哨兵继续监视旧主节点，当其上线时，哨兵集群向其发送<code>SLAVEOF</code>命令，使其成为新主节点的从节点。</p><p>至此，主从故障转移的整个过程完成。</p><h2 id="哨兵集群如何组成"><a href="#哨兵集群如何组成" class="headerlink" title="哨兵集群如何组成"></a>哨兵集群如何组成</h2><p>在主从集群中，主节点上有一个<code>_sentinel_:hello</code>频道，不同哨兵就是通过该频道来相互发现的。</p><p><img src="https://i.ibb.co/rZyzVrc/channel.png" alt="channel"></p><p>哨兵A将自己的IP地址和端口发布到频道<code>_sentinel_:hello</code>上，由于哨兵B和C订阅了该频道，因此B和C会从这个频道获取到A的地址和端口，继而与A分别建立连接；同理，B和C之间也可建立连接，最终形成哨兵集群。</p><div class="note info flat"><p>为了监控从节点，哨兵集群如何获得从节点信息？</p></div><p>主节点处存有从节点的信息，因此哨兵会每隔10秒向主节点发送INFO命令来获取所有从节点的信息，然后与各个从节点建立连接，进而持续地监控各个从节点的状态。</p><p><img src="https://i.ibb.co/8gsVBcC/slave-Monitor.png" alt="slaveMonitor"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数据库 </tag>
+            
+            <tag> Redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Redis主从复制</title>
       <link href="/2023/07/19/Redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/"/>
       <url>/2023/07/19/Redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</url>
