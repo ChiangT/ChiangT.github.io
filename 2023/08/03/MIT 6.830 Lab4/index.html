@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>MIT 6.830 Lab4 | Mind Palace</title><meta name="author" content="Mitsui"><meta name="copyright" content="Mitsui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="MIT 6.830 Lab4Project Intro   这个Lab需要实现数据库的事务处理和并发相关的功能。 事务是数据库中一组原子操作的集合，具有ACID四个特性。 数据库一般采用锁来实现事务的这些特性，具体可分为共享锁和互斥锁：  若一个事务要对一个对象进行读操作，则必须持有其的共享锁 若一个事务要对一个对象进行写操作，则必须持有其的互斥锁 多个事务可以同时持有一个对象的共享锁，而同一时间">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MIT 6.830 Lab4">
+<meta property="og:url" content="http://brokenmind.top/2023/08/03/MIT%206.830%20Lab4/index.html">
+<meta property="og:site_name" content="Mind Palace">
+<meta property="og:description" content="MIT 6.830 Lab4Project Intro   这个Lab需要实现数据库的事务处理和并发相关的功能。 事务是数据库中一组原子操作的集合，具有ACID四个特性。 数据库一般采用锁来实现事务的这些特性，具体可分为共享锁和互斥锁：  若一个事务要对一个对象进行读操作，则必须持有其的共享锁 若一个事务要对一个对象进行写操作，则必须持有其的互斥锁 多个事务可以同时持有一个对象的共享锁，而同一时间">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.ibb.co/RvB1PvT/wallhaven-weolw7.png">
+<meta property="article:published_time" content="2023-08-03T02:50:43.698Z">
+<meta property="article:modified_time" content="2023-08-03T08:42:20.050Z">
+<meta property="article:author" content="Mitsui">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.ibb.co/RvB1PvT/wallhaven-weolw7.png"><link rel="shortcut icon" href="https://i.ibb.co/C05szQt/8gvxj-TWK7-Xb-Q1-Z3.png"><link rel="canonical" href="http://brokenmind.top/2023/08/03/MIT%206.830%20Lab4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MIT 6.830 Lab4',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-08-03 16:42:20'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><script src="https://npm.elemecdn.com/echarts@4.9.0/dist/echarts.min.js"></script><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/Butterfly-double-row-display@1.00/cardlistpost.min.css"/>
+<style>#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags:before {content:"\A";
+  white-space: pre;}#recent-posts > .recent-post-item >.recent-post-info > .article-meta-wrap > .tags > .article-meta__separator{display:none}</style>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.ibb.co/f83Rwy5/F81-KGhi-MH52-Qp-Pt.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.ibb.co/XYK71FW/R3ryk-XHWua-CKGP9.png')"><nav id="nav"><span id="blog-info"><a href="/" title="Mind Palace"><span class="site-name">Mind Palace</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">MIT 6.830 Lab4</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-08-03T02:50:43.698Z" title="发表于 2023-08-03 10:50:43">2023-08-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-08-03T08:42:20.050Z" title="更新于 2023-08-03 16:42:20">2023-08-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/MIT-6-830/">MIT 6.830</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="MIT 6.830 Lab4"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="MIT-6-830-Lab4"><a href="#MIT-6-830-Lab4" class="headerlink" title="MIT 6.830 Lab4"></a>MIT 6.830 Lab4</h1><div class="note info flat"><p><strong>Project Intro</strong></p>
+</div>
+
+<p>这个Lab需要实现数据库的事务处理和并发相关的功能。</p>
+<p>事务是数据库中一组原子操作的集合，具有<strong>ACID</strong>四个特性。</p>
+<p>数据库一般采用锁来实现事务的这些特性，具体可分为共享锁和互斥锁：</p>
+<ul>
+<li>若一个事务要对一个对象进行读操作，则必须持有其的共享锁</li>
+<li>若一个事务要对一个对象进行写操作，则必须持有其的互斥锁</li>
+<li>多个事务可以同时持有一个对象的共享锁，而同一时间只有一个事务可以持有某对象的互斥锁</li>
+<li>若只有一个事务拥有某对象的共享锁，则该锁自动升级为互斥锁</li>
+</ul>
+<p>上面的对象根据粒度的不同而不同，可以是一个表，一个页，一个元组；在这个Lab中，只考虑页级锁。</p>
+<p>同时在申请锁的时候，如果一个事务需要的锁不能立即获得，那么它就需要进入阻塞状态，直到被分配到所需要的锁，数据库系统中一般会有一个专门管理锁的分配和释放的组件，可以称之为<code>LockManager</code>。</p>
+<p>另外，要实现ACID，必须遵循两阶段锁协议（Two Phase Locking，2PL）。</p>
+<blockquote>
+<p>增长阶段：事务可以获得锁，但不能释放锁；</p>
+<p>缩减阶段：事务可以释放锁，但不能获得新锁。</p>
+<p>相对地，<strong>严格两阶段锁协议</strong>（S2PL）对于锁的封锁要求不仅只在两个阶段，还要求事务持有的所有互斥锁必须在事务commit后才可释放。这样能保证执行过程中不出现死锁的情况。</p>
+<p>另外，增长阶段共享锁可以升级为互斥锁，缩减阶段互斥锁可以降级为共享锁。</p>
+</blockquote>
+<div class="note success flat"><p><strong>LockManager</strong></p>
+</div>
+
+<p>LockManager的详细实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LockManager</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, List&lt;Lock&gt;&gt; map;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LockManager</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="built_in">this</span>.map = <span class="keyword">new</span> <span class="title class_">ConcurrentHashMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> Boolean <span class="title function_">acquireLock</span><span class="params">(TransactionId tid, PageId pageId, Permissions permissions)</span>&#123;</span><br><span class="line">        <span class="type">Integer</span> <span class="variable">pid</span> <span class="operator">=</span> pageId.getPageNumber();</span><br><span class="line">        <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Lock</span>(permissions, tid);</span><br><span class="line">        List&lt;Lock&gt; lockList = map.get(pid);</span><br><span class="line">        <span class="keyword">if</span>(lockList == <span class="literal">null</span>)&#123;</span><br><span class="line">            lockList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            lockList.add(lock);</span><br><span class="line">            map.put(pid, lockList);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 只有一个事务占用锁</span></span><br><span class="line">        <span class="keyword">if</span>(lockList.size() == <span class="number">1</span>)&#123;</span><br><span class="line">            <span class="type">Lock</span> <span class="variable">firstLock</span> <span class="operator">=</span> lockList.get(<span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span>(firstLock.getTransactionId().equals(tid))&#123;</span><br><span class="line">                <span class="keyword">if</span>(firstLock.getPermissions().equals(Permissions.READ_ONLY) &amp;&amp; lock.getPermissions().equals(Permissions.READ_WRITE))&#123;</span><br><span class="line">                    <span class="comment">// 升级锁</span></span><br><span class="line">                    firstLock.setPermissions(Permissions.READ_WRITE);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(firstLock.getPermissions().equals(Permissions.READ_ONLY) &amp;&amp; lock.getPermissions().equals(Permissions.READ_ONLY))&#123;</span><br><span class="line">                    lockList.add(lock);</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//有多个事务则说明lockList中均为共享锁</span></span><br><span class="line">        <span class="keyword">if</span>(lock.getPermissions().equals(Permissions.READ_WRITE))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//同一个事务重复获取读锁</span></span><br><span class="line">        <span class="keyword">for</span> (Lock lock1 : lockList)&#123;</span><br><span class="line">            <span class="keyword">if</span>(lock1.getTransactionId().equals(tid))&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        lockList.add(lock);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">releaseLock</span><span class="params">(TransactionId tid, PageId pageId)</span>&#123;</span><br><span class="line">        List&lt;Lock&gt; lockList = map.get(pageId.getPageNumber());</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;lockList.size(); i++)&#123;</span><br><span class="line">            <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> lockList.get(i);</span><br><span class="line">            <span class="keyword">if</span>(lock.getTransactionId().equals(tid))&#123;</span><br><span class="line">                lockList.remove(lock);</span><br><span class="line">                <span class="keyword">if</span>(lockList.size() == <span class="number">0</span>)&#123;</span><br><span class="line">                    map.remove(pageId.getPageNumber());</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">releaseAllLock</span><span class="params">(TransactionId tid)</span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Integer k : map.keySet())&#123;</span><br><span class="line">            List&lt;Lock&gt; lockList = map.get(k);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;lockList.size(); i++)&#123;</span><br><span class="line">                <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> lockList.get(i);</span><br><span class="line">                <span class="keyword">if</span>(lock.getTransactionId().equals(tid))&#123;</span><br><span class="line">                    lockList.remove(lock);</span><br><span class="line">                    <span class="keyword">if</span>(lockList.size() == <span class="number">0</span>)&#123;</span><br><span class="line">                        map.remove(k);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> Boolean <span class="title function_">holdLock</span><span class="params">(TransactionId tid, PageId pageId)</span>&#123;</span><br><span class="line">        List&lt;Lock&gt; lockList = map.get(pageId.getPageNumber());</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;lockList.size(); i++)&#123;</span><br><span class="line">            <span class="type">Lock</span> <span class="variable">lock</span> <span class="operator">=</span> lockList.get(i);</span><br><span class="line">            <span class="keyword">if</span>(lock.getTransactionId().equals(tid))&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后需要在原来的BufferPool代码上稍作修改，完善各个函数对页操作的加锁开锁步骤。例如，在<code>getPage()</code>时先获取当前Page的锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lockAcquired = lockManager.acquireLock(tid, pid, perm);</span><br></pre></td></tr></table></figure>
+
+<div class="note success flat"><p><strong>锁的生命周期</strong></p>
+</div>
+
+<p>这一项主要是注意使用<code>getPage()</code>方法时，申请的锁类型是否正确，即<code>READ_WRITE</code>和<code>READ_ONLY</code>的选择。</p>
+<div class="note success flat"><p><strong>实现No Steal</strong></p>
+</div>
+
+<p>No Steal指的是在rollback的情况下，不允许从脏页中「steal」数据，即在事务提交时才将脏页写入磁盘或者事务中断时将脏页恢复成磁盘文件原来的样子。</p>
+<p>在之前的Lab中，实现了基于LRU的页置换算法，但并没有区分脏页。现在不能像之前一样淘汰这些脏页。</p>
+<p>当BufferPool满时，会调用<code>evictPage()</code>。那么，就从现在LRU的缓存中倒序遍历，淘汰第一个「脏标记」为空的页即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title function_">evictPage</span><span class="params">()</span> <span class="keyword">throws</span> DbException &#123;</span><br><span class="line">    <span class="comment">// some code goes here</span></span><br><span class="line">    <span class="comment">// not necessary for lab1</span></span><br><span class="line">    <span class="type">Page</span> <span class="variable">value</span> <span class="operator">=</span> lruCache.getTail().prev.value;</span><br><span class="line">    <span class="keyword">if</span> (value != <span class="literal">null</span> &amp;&amp; value.isDirty() != <span class="literal">null</span>)&#123;</span><br><span class="line">        findNotDirty();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        lruCache.discard();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">findNotDirty</span><span class="params">()</span> <span class="keyword">throws</span> DbException&#123;</span><br><span class="line">    LRUCache&lt;PageId, Page&gt;.<span class="type">DLinkedNode</span> <span class="variable">head</span> <span class="operator">=</span> lruCache.getHead();</span><br><span class="line">    LRUCache&lt;PageId, Page&gt;.<span class="type">DLinkedNode</span> <span class="variable">tail</span> <span class="operator">=</span> lruCache.getTail();</span><br><span class="line">    tail = tail.prev;</span><br><span class="line">    <span class="keyword">while</span> (head != tail)&#123;</span><br><span class="line">        <span class="type">Page</span> <span class="variable">value</span> <span class="operator">=</span> tail.value;</span><br><span class="line">        <span class="keyword">if</span> (value != <span class="literal">null</span> &amp;&amp; value.isDirty() == <span class="literal">null</span>)&#123;</span><br><span class="line">            lruCache.remove(tail);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = tail.prev;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">DbException</span>(<span class="string">&quot;All dirty pages&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="note success flat"><p><strong>实现Transaction</strong></p>
+</div>
+
+<p>每个事务都有一个Transaction对象，SimpleDB用TransactionId来唯一标识一个事务。</p>
+<p>事务开始之前，会创建一个Transaction对象，TransactionId此时也会自动获取。</p>
+<p>当事务完成后，调用<code>transactionComplete</code>完成收尾处理工作。其会根据事务执行的成功与否分别进行处理，若事务执行成功，则将事务ID对应的脏页写入到磁盘中，若事务执行失败，则将事务ID对应的脏页淘汰出BufferPool并从磁盘中获取原来的数据页。</p>
+<p>最后，释放该事务在所有数据页中加的锁。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transactionComplete</span><span class="params">(TransactionId tid, <span class="type">boolean</span> commit)</span> &#123;</span><br><span class="line">    <span class="comment">// some code goes here</span></span><br><span class="line">    <span class="comment">// not necessary for lab1|lab2</span></span><br><span class="line">    <span class="keyword">if</span> (commit)&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            newFlushPages(tid);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        rollback(tid);</span><br><span class="line">    &#125;</span><br><span class="line">    lockManager.releaseAllLock(tid);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="note success flat"><p><strong>死锁</strong></p>
+</div>
+
+<p>死锁的产生情况：</p>
+<ul>
+<li>若有两个事务t0和t1，两个数据页p0和p1，t0有了p1的写锁后申请p0的写锁，t1有了p0的写锁后申请p1的写锁，发生死锁</li>
+<li>若多个事务t0，t1，t2，t3都同时对数据页p0加了读锁，然后每个事务都要申请写锁，发生死锁</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>超时处理。对每个事务设置一个获取锁的时限，若超过该时限，事务仍未获得锁，则认为死锁，将该事务中断</li>
+<li>循环等待图检测。建立事务等待的关系图，若该图中出现了环，则有死锁发生。在加锁前就进行检测，若此次申请会造成环，则终止该事务。</li>
+</ul>
+<p>实现时采用了较为简单的第一种方案。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(!lockAcquired)&#123;</span><br><span class="line">    <span class="type">long</span> <span class="variable">now</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">if</span>(now - start &gt; timeout)&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TransactionAbortedException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    lockAcquired = lockManager.acquireLock(tid, pid, perm);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://brokenmind.top">Mitsui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://brokenmind.top/2023/08/03/MIT%206.830%20Lab4/">http://brokenmind.top/2023/08/03/MIT%206.830%20Lab4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://brokenmind.top" target="_blank">Mind Palace</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://i.ibb.co/RvB1PvT/wallhaven-weolw7.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/05/MIT%206.830%20Database%20Systems/" title="MIT 6.830 Lecture Notes"><img class="cover" src="https://i.ibb.co/3swF2XV/c-Wi-Csrjw-KP1yz84.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-05</div><div class="title">MIT 6.830 Lecture Notes</div></div></a></div><div><a href="/2023/06/06/MIT%206.830%20Lab1/" title="MIT 6.830 Lab1"><img class="cover" src="https://i.ibb.co/P4vVJhb/To-Glz1b7a-Ef-XDk8.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-06</div><div class="title">MIT 6.830 Lab1</div></div></a></div><div><a href="/2023/07/14/MIT%206.830%20Lab2/" title="MIT 6.830 Lab2"><img class="cover" src="https://i.ibb.co/GvyzX0t/wallhaven-85goxk.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-14</div><div class="title">MIT 6.830 Lab2</div></div></a></div><div><a href="/2023/08/03/MIT%206.830%20Lab3/" title="MIT 6.830 Lab3"><img class="cover" src="https://i.ibb.co/VDFMtX8/wallhaven-e7q16l.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-03</div><div class="title">MIT 6.830 Lab3</div></div></a></div><div><a href="/2023/07/12/MySQL%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/" title="MySQL数据存储"><img class="cover" src="https://i.ibb.co/JsdKnJJ/wallhaven-0w9787.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-12</div><div class="title">MySQL数据存储</div></div></a></div><div><a href="/2023/07/09/MySQL%E6%9E%B6%E6%9E%84/" title="MySQL架构"><img class="cover" src="https://i.ibb.co/b7yFZw6/wallhaven-rdej8j.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-09</div><div class="title">MySQL架构</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.ibb.co/f83Rwy5/F81-KGhi-MH52-Qp-Pt.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Mitsui</div><div class="author-info__description">我会发着呆，然后忘记你</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mitsui921"><i></i><span>🧩🎶🥂</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Mitsui921" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:jtaoseu17@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MIT-6-830-Lab4"><span class="toc-number">1.</span> <span class="toc-text">MIT 6.830 Lab4</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By Mitsui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">我一路向北，离开有你的季节。<p><a target="_blank" href="https://hexo.io/"><img src="https://img.shields.io/badge/Frame-Hexo-blue?style=flat&logo=hexo" title="博客框架为Hexo"></a>&nbsp;<a target="_blank" href="https://butterfly.js.org/"><img src="https://img.shields.io/badge/Theme-Butterfly-6513df?style=flat&logo=bitdefender" title="主题采用butterfly"></a>&nbsp;<a target="_blank" href="https://www.jsdelivr.com/"><img src="https://img.shields.io/badge/CDN-jsDelivr-orange?style=flat&logo=jsDelivr" title="本站使用JsDelivr为静态资源提供CDN加速"></a> &nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Vervel-brightgreen?style=flat&logo=Vercel" title="本站采用双线部署，默认线路托管于Vercel"></a>&nbsp;<a target="_blank" href="https://vercel.com/ "><img src="https://img.shields.io/badge/Hosted-Coding-0cedbe?style=flat&logo=Codio" title="本站采用双线部署，联通线路托管于Coding"></a>&nbsp;<a target="_blank" href="https://github.com/"><img src="https://img.shields.io/badge/Source-Github-d021d6?style=flat&logo=GitHub" title="本站项目由Gtihub托管"></a>&nbsp;<a target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris" title="本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可"></a></p></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container').forEach(node => {
+            if (node.hasAttribute('display')) {
+              btf.wrap(node, 'div', { class: 'mathjax-overflow' })
+            } else {
+              btf.wrap(node, 'span', { class: 'mathjax-overflow' })
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js"></script><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script></div><script defer src="/js/cursor.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
